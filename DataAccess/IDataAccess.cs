@@ -5,5 +5,8 @@ namespace BackEcommerceAngNet.DataAccess
     public interface IDataAccess
     {
         List<ProductCategory> GetProductCategories();
+        ProductCategory GetProductCategory(int id);
+        Offer GetOffer(int id);
+        List<Product> GetProductos(string category,string subcategory, int count);
     }
 }

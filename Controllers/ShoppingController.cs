@@ -20,6 +20,12 @@ namespace BackEcommerceAngNet.Controllers
         {
             var result=dataAccess.GetProductCategories();
             return Ok(result);
+        } 
+        [HttpGet("GetOffer")]
+        public IActionResult GetOffer(int id)
+        {
+            var result=dataAccess.GetOffer(id);
+            return Ok(result);
         }
     }
 }

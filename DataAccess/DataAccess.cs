@@ -89,12 +89,79 @@ namespace BackEcommerceAngNet.DataAccess
 
         public ProductCategory GetProductCategory(int id)
         {
-            throw new NotImplementedException();
+            var prodcategory = new ProductCategory();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT * FROM ProductCategories where CategoryId=" + id + ";";
+                    command.CommandText = query;
+
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        prodcategory.Id = (int)reader["CategoryId"];
+                        prodcategory.Category = (string)reader["Category"];
+                        prodcategory.SubCategory = (string)reader["SubCategory"];
+                    };
+                }
+                return prodcategory;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public List<Product> GetProductos(string category, string subcategory, int count)
         {
-            throw new NotImplementedException();
+            var productos = new List<Product>();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT TOP "+ count +" * FROM Products where CategoryId=(SELECT CategoryId FROM ProductCategories where Category=@c AND SubCategory=@s) ORDER BY newid();";
+                    command.CommandText = query;
+                    command.Parameters.Add("@c", System.Data.SqlDbType.NVarChar).Value = category;
+                    command.Parameters.Add("@s", System.Data.SqlDbType.NVarChar).Value = subcategory;
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        var producto = new Product()
+                        {
+                            Id = (int)reader["ProductId"],
+                            Title = (string)reader["Title"],
+                            Description = (string)reader["Description"],
+                            Price = (double)reader["Price"],
+                            Quantity = (int)reader["Quantity"],
+                            ImageName = (string)reader["ImageName"]
+                        };
+                        var categoryid= (int)reader["CategoryId"];
+                        producto.ProductCategory= GetProductCategory(categoryid);
+
+                        var offerid = (int)reader["OfferId"];
+                        producto.Offer= GetOffer(offerid);  
+
+                        productos.Add(producto);
+                    }
+                }
+                return productos;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

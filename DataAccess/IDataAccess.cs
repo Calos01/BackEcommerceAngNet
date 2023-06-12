@@ -8,5 +8,6 @@ namespace BackEcommerceAngNet.DataAccess
         ProductCategory GetProductCategory(int id);
         Offer GetOffer(int id);
         List<Product> GetProductos(string category,string subcategory, int count);
+        Product GetProduct(int id);
     }
 }

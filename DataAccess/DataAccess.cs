@@ -50,6 +50,48 @@ namespace BackEcommerceAngNet.DataAccess
             }            
         }
 
+        public Product GetProduct(int id)
+        {
+            var producto = new Product();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT * FROM Products where ProductId=" + id + ";";
+                    command.CommandText = query;
+
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        producto.Id = (int)reader["ProductId"];
+                        producto.Title = (string)reader["Title"];
+                        producto.Description = (string)reader["Description"];
+
+                        var categoryid= (int)reader["CategoryId"];
+                        producto.ProductCategory = this.GetProductCategory(categoryid);
+
+                        var offerid = (int)reader["OfferId"];
+                        producto.Offer= this.GetOffer(offerid);
+
+                        producto.Price = (double)reader["Price"];
+                        producto.Quantity = (int)reader["Quantity"];
+                        producto.ImageName = (string)reader["ImageName"];
+                    };
+                }
+                return producto;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<ProductCategory> GetProductCategories()
         {
             var productcategory=new List<ProductCategory>();

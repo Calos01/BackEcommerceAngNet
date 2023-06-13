@@ -9,5 +9,6 @@ namespace BackEcommerceAngNet.DataAccess
         Offer GetOffer(int id);
         List<Product> GetProductos(string category,string subcategory, int count);
         Product GetProduct(int id);
+        Boolean InsertarUsuario(User user);
     }
 }

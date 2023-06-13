@@ -10,5 +10,6 @@ namespace BackEcommerceAngNet.DataAccess
         List<Product> GetProductos(string category,string subcategory, int count);
         Product GetProduct(int id);
         Boolean InsertarUsuario(User user);
+        String UserExist(string email, string password);
     }
 }

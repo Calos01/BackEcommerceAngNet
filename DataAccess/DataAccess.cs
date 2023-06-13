@@ -248,5 +248,54 @@ namespace BackEcommerceAngNet.DataAccess
                 throw ex;
             }
         }
+
+        public string UserExist(string email, string password)
+        {
+            User user = new();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT COUNT(*) from Users WHERE Email='" + user.Email+"' AND Password='"+user.Password+"';";
+                    command.CommandText = query;
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+
+                    if (count == 0)
+                    {
+                        connection.Close();
+                    }
+                    else
+                    {
+                        query = "SELECT * FROM User where Email='" + email + "';";
+                        command.CommandText = query;
+
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            user.UserId= (int)reader["UserId"];
+                            user.FirstName = (string)reader["FirstName"];
+                            user.LastName = (string)reader["LastName"];
+                            user.Email = (string)reader["Email"];
+                            user.Address = (string)reader["Address"];
+                            user.Mobile = (int)reader["Mobile"];
+                            user.Password = (string)reader["Password"];
+                            user.CreatedAt = (string)reader["CreatedAt"];
+                            user.ModifiedAt = (string)reader["ModifiedAt"];
+                        };
+                    }
+                    //implementar jwt
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

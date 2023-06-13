@@ -1,4 +1,5 @@
 ﻿using BackEcommerceAngNet.DataAccess;
+using BackEcommerceAngNet.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackEcommerceAngNet.Controllers
@@ -44,6 +45,23 @@ namespace BackEcommerceAngNet.Controllers
         {
             var result = dataAccess.GetProduct(id);
             return Ok(result);
+        }
+        [HttpPost("RegisterUser")]
+        public IActionResult RegisterUser([FromBody]User user)
+        {
+            user.CreatedAt=DateTime.Now.ToString(formatodate);
+            user.ModifiedAt=DateTime.Now.ToString(formatodate);
+            var result=dataAccess.InsertarUsuario(user);
+            string? message;
+            if (result)
+            {
+                message = "Insertado correctamente";
+            }
+            else
+            {
+                message = "No se pudo insertar";
+            }
+            return Ok(message);
         }
     }
 }

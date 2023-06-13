@@ -205,5 +205,97 @@ namespace BackEcommerceAngNet.DataAccess
                 throw ex;
             }
         }
+
+        public bool InsertarUsuario(User user)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT COUNT(*) from Users WHERE Email='"+user.Email+"';";
+                    command.CommandText = query;
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+
+                    if (count > 0)
+                    {
+                        connection.Close();
+                        return false;
+                    }
+                    else
+                    {
+                        query = "INSERT INTO Users(FirstName,LastName,Email,Address,Mobile,Password,CreatedAt,ModifiedAt) values(@fn,@ln,@em,@ad,@mo,@pa,@ca,@ma)";
+                        command.CommandText = query;
+                        command.Parameters.Add("@fn", System.Data.SqlDbType.NVarChar).Value = user.FirstName;
+                        command.Parameters.Add("@ln", System.Data.SqlDbType.NVarChar).Value = user.LastName;
+                        command.Parameters.Add("@em", System.Data.SqlDbType.NVarChar).Value = user.Email;
+                        command.Parameters.Add("@ad", System.Data.SqlDbType.NVarChar).Value = user.Address;
+                        command.Parameters.Add("@mo", System.Data.SqlDbType.Int).Value = user.Mobile;
+                        command.Parameters.Add("@pa", System.Data.SqlDbType.NVarChar).Value = user.Password;
+                        command.Parameters.Add("@ca", System.Data.SqlDbType.NVarChar).Value = user.CreatedAt;
+                        command.Parameters.Add("@ma", System.Data.SqlDbType.NVarChar).Value = user.ModifiedAt;
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public string UserExist(string email, string password)
+        {
+            User user = new();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT COUNT(*) from Users WHERE Email='" + user.Email+"' AND Password='"+user.Password+"';";
+                    command.CommandText = query;
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+
+                    if (count == 0)
+                    {
+                        connection.Close();
+                    }
+                    else
+                    {
+                        query = "SELECT * FROM User where Email='" + email + "';";
+                        command.CommandText = query;
+
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            user.UserId= (int)reader["UserId"];
+                            user.FirstName = (string)reader["FirstName"];
+                            user.LastName = (string)reader["LastName"];
+                            user.Email = (string)reader["Email"];
+                            user.Address = (string)reader["Address"];
+                            user.Mobile = (int)reader["Mobile"];
+                            user.Password = (string)reader["Password"];
+                            user.CreatedAt = (string)reader["CreatedAt"];
+                            user.ModifiedAt = (string)reader["ModifiedAt"];
+                        };
+                    }
+                    //implementar jwt
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

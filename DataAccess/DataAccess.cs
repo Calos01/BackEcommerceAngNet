@@ -1,7 +1,13 @@
 ﻿using BackEcommerceAngNet.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Unicode;
 
 namespace BackEcommerceAngNet.DataAccess
 {
@@ -234,7 +240,7 @@ namespace BackEcommerceAngNet.DataAccess
                         command.Parameters.Add("@ln", System.Data.SqlDbType.NVarChar).Value = user.LastName;
                         command.Parameters.Add("@em", System.Data.SqlDbType.NVarChar).Value = user.Email;
                         command.Parameters.Add("@ad", System.Data.SqlDbType.NVarChar).Value = user.Address;
-                        command.Parameters.Add("@mo", System.Data.SqlDbType.Int).Value = user.Mobile;
+                        command.Parameters.Add("@mo", System.Data.SqlDbType.NVarChar).Value = user.Mobile;
                         command.Parameters.Add("@pa", System.Data.SqlDbType.NVarChar).Value = user.Password;
                         command.Parameters.Add("@ca", System.Data.SqlDbType.NVarChar).Value = user.CreatedAt;
                         command.Parameters.Add("@ma", System.Data.SqlDbType.NVarChar).Value = user.ModifiedAt;
@@ -252,8 +258,7 @@ namespace BackEcommerceAngNet.DataAccess
         public string UserExist(string email, string password)
         {
             User user = new();
-            try
-            {
+           
                 using (SqlConnection connection = new SqlConnection(bdconnection))
                 {
                     SqlCommand command = new()
@@ -268,10 +273,11 @@ namespace BackEcommerceAngNet.DataAccess
                     if (count == 0)
                     {
                         connection.Close();
+                        return "";
                     }
                     else
                     {
-                        query = "SELECT * FROM User where Email='" + email + "' AND Password='" + password + "';";
+                        query = "SELECT * FROM Users where Email='" + email + "' AND Password='" + password + "';";
                         command.CommandText = query;
 
                         SqlDataReader reader = command.ExecuteReader();
@@ -282,27 +288,41 @@ namespace BackEcommerceAngNet.DataAccess
                             user.LastName = (string)reader["LastName"];
                             user.Email = (string)reader["Email"];
                             user.Address = (string)reader["Address"];
-                            user.Mobile = (int)reader["Mobile"];
+                            user.Mobile = (string)reader["Mobile"];
                             user.Password = (string)reader["Password"];
                             user.CreatedAt = (string)reader["CreatedAt"];
                             user.ModifiedAt = (string)reader["ModifiedAt"];
                         };
                     }
                     //implementar jwt
-                    string key = "9yW%h5#pMv64zAV69#lE";
-                    user.UserId = (int)reader["UserId"];
-                    user.FirstName = (string)reader["FirstName"];
-                    user.LastName = (string)reader["LastName"];
-                    user.Email = (string)reader["Email"];
-                    user.Address = (string)reader["Address"];
-                    user.Mobile = (int)reader["Mobile"];
-                }
+                    string key = "8F9A02D3AB4C5E678EDC2F1BCEA97FEB710DFFA79C0B41E4DAE3A90F659DE72B";
+                    string duration = "60";
+                    var symetrickey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                    var credentials = new SigningCredentials(symetrickey, SecurityAlgorithms.HmacSha256);
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+                    var claims = new[]
+                    {
+                         new Claim("id",user.UserId.ToString()),
+                         new Claim("firstname",user.FirstName),
+                         new Claim("lasname",user.LastName),
+                         new Claim("email",user.Email),
+                         new Claim("address",user.Address),
+                         new Claim("mobile",user.Mobile),
+                         new Claim("password",user.Password),
+                         new Claim("createdat",user.CreatedAt),
+                         new Claim("modifiedat",user.ModifiedAt),
+
+                    };
+                    var token = new JwtSecurityToken(
+                        issuer: "localhost",
+                        audience: "localhost",
+                        claims: claims,
+                        expires: DateTime.Now.AddMinutes(Int32.Parse(duration)),
+                        signingCredentials:credentials
+                        );
+                    //convertimos  a string el token
+                    return new JwtSecurityTokenHandler().WriteToken(token);
+                }
         }
     }
 }

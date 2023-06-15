@@ -1,4 +1,7 @@
 using BackEcommerceAngNet.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IDataAccess,DataAccess>();
+//JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "localhost",
+        ValidAudience = "localhost",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("8F9A02D3AB4C5E678EDC2F1BCEA97FEB710DFFA79C0B41E4DAE3A90F659DE72B")),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 //CORS
 builder.Services.AddCors(options => options.AddPolicy("AllowWebapp",
                                     builder => builder.AllowAnyOrigin()
@@ -27,6 +45,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowWebapp");
+//jwt
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

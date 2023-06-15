@@ -260,7 +260,7 @@ namespace BackEcommerceAngNet.DataAccess
                     {
                         Connection = connection
                     };
-                    string query = "SELECT COUNT(*) from Users WHERE Email='" + user.Email+"' AND Password='"+user.Password+"';";
+                    string query = "SELECT COUNT(*) from Users WHERE Email='" + email+"' AND Password='"+password+"';";
                     command.CommandText = query;
                     connection.Open();
                     int count = (int)command.ExecuteScalar();
@@ -271,7 +271,7 @@ namespace BackEcommerceAngNet.DataAccess
                     }
                     else
                     {
-                        query = "SELECT * FROM User where Email='" + email + "';";
+                        query = "SELECT * FROM User where Email='" + email + "' AND Password='" + password + "';";
                         command.CommandText = query;
 
                         SqlDataReader reader = command.ExecuteReader();
@@ -289,6 +289,7 @@ namespace BackEcommerceAngNet.DataAccess
                         };
                     }
                     //implementar jwt
+                    string key = "9yW%h5#pMv64zAV69#lE";
                 }
 
             }

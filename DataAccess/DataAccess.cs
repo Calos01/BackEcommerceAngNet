@@ -290,6 +290,12 @@ namespace BackEcommerceAngNet.DataAccess
                     }
                     //implementar jwt
                     string key = "9yW%h5#pMv64zAV69#lE";
+                    user.UserId = (int)reader["UserId"];
+                    user.FirstName = (string)reader["FirstName"];
+                    user.LastName = (string)reader["LastName"];
+                    user.Email = (string)reader["Email"];
+                    user.Address = (string)reader["Address"];
+                    user.Mobile = (int)reader["Mobile"];
                 }
 
             }

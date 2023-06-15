@@ -63,5 +63,16 @@ namespace BackEcommerceAngNet.Controllers
             }
             return Ok(message);
         }
+
+        [HttpPost("LoginUser")]
+        public IActionResult LoginUser([FromBody] User user)
+        {
+            string token = dataAccess.UserExist(user.Email, user.Password);
+            if (token == "")
+            {
+                token = "invalid";
+            }
+            return Ok(token);
+        }
     }
 }

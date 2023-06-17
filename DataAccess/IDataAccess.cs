@@ -11,5 +11,8 @@ namespace BackEcommerceAngNet.DataAccess
         Product GetProduct(int id);
         Boolean InsertarUsuario(User user);
         String UserExist(string email, string password);
+        void InsertReview(Review review);
+        List<Review> GetReviews(int productid);
+        User GetUser(int id);
     }
 }

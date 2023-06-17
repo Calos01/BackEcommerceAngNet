@@ -74,5 +74,21 @@ namespace BackEcommerceAngNet.Controllers
             }
             return Ok(token);
         }
+
+        [HttpPost("InsertReview")]
+        public IActionResult InsertReview([FromBody] Review review)
+        {
+            review.cretedAt = DateTime.Now.ToString(formatodate);
+            dataAccess.InsertReview(review);
+            
+            return Ok("review insertado");
+        }
+
+        [HttpGet("GetReviews/{productid}")]
+        public IActionResult GetReviews(int productid)
+        {
+            var result=dataAccess.GetReviews(productid);
+            return Ok(result);
+        }
     }
 }

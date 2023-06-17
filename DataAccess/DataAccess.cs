@@ -212,6 +212,82 @@ namespace BackEcommerceAngNet.DataAccess
             }
         }
 
+        public List<Review> GetReviews(int productid)
+        {
+            var reviews = new List<Review>();
+            
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT * FROM Reviews WHERE ProductId=" + productid + ";";
+                    command.CommandText = query;
+                    
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        var review = new Review()
+                        {
+                            Id = (int)reader["ReviewId"],
+                            review = (string)reader["Review"],
+                            cretedAt = (string)reader["CreatedAt"]
+                        };
+                        var userid = (int)reader["UserId"];
+                        review.User = GetUser(userid);
+
+                        var prodid = (int)reader["ProductId"];
+                        review.Product = GetProduct(prodid);
+
+                        reviews.Add(review);
+                    }
+                }
+                return reviews;
+            
+            
+        }
+
+        public User GetUser(int id)
+        {
+            var user = new User();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(bdconnection))
+                {
+                    SqlCommand command = new()
+                    {
+                        Connection = connection
+                    };
+                    string query = "SELECT * FROM Users where UserId=" + id + ";";
+                    command.CommandText = query;
+
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        user.UserId = (int)reader["UserId"];
+                        user.FirstName = (string)reader["FirstName"];
+                        user.LastName = (string)reader["LastName"];
+                        user.Email = (string)reader["Email"];
+                        user.Address = (string)reader["Address"];
+                        user.Mobile = (string)reader["Mobile"];
+                        user.Password = (string)reader["Password"];
+                        user.CreatedAt = (string)reader["CreatedAt"];
+                        user.ModifiedAt = (string)reader["ModifiedAt"];
+                    };
+                }
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool InsertarUsuario(User user)
         {
             try
@@ -252,6 +328,27 @@ namespace BackEcommerceAngNet.DataAccess
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public void InsertReview(Review review)
+        {
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                var query = "INSERT INTO Reviews(UserId,ProductId,Review,CreatedAt) values(@uid,@pid,@re,@cat)";
+                command.CommandText = query;
+                command.Parameters.Add("@uid", System.Data.SqlDbType.Int).Value = review.User.UserId;
+                command.Parameters.Add("@pid", System.Data.SqlDbType.Int).Value = review.Product.Id;
+                command.Parameters.Add("@re", System.Data.SqlDbType.NVarChar).Value = review.review;
+                command.Parameters.Add("@cat", System.Data.SqlDbType.NVarChar).Value = review.cretedAt;
+                
+                connection.Open();
+                command.ExecuteNonQuery();
+               
             }
         }
 
@@ -324,5 +421,6 @@ namespace BackEcommerceAngNet.DataAccess
                     return new JwtSecurityTokenHandler().WriteToken(token);
                 }
         }
+
     }
 }

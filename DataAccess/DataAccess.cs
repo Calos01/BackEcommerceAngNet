@@ -24,6 +24,49 @@ namespace BackEcommerceAngNet.DataAccess
             formatodate = this.configuration["Constants: FormatoDate"];
         }
 
+        public Cart GetCartActivePorUser(int userid)
+        {
+            Cart cart = new Cart();
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+                string query = "SELECT COUNT(*) from Carts WHERE UserId=" + userid + " AND Ordered='false';";
+                command.CommandText = query;
+                int count = (int)command.ExecuteScalar();
+
+                if (count == 0)
+                {
+                    return new Cart();
+                }
+
+                query = "SELECT CartId from Carts WHERE UserId=" + userid + " AND Ordered='false';";
+                command.CommandText = query;
+                int cartid = (int)command.ExecuteScalar();
+
+                query = "SELECT * FROM CartItems where CartId=" + cartid + ";";
+                command.CommandText = query;
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CartItems item = new CartItems();
+                    item.Id = (int)reader["CartItemId"];
+                    item.Producto = GetProduct((int)reader["ProductId"]);
+                    cart.CartItems.Add(item);
+                };
+                cart.Id= cartid;
+                cart.User = GetUser(userid);
+                cart.Ordered = false;
+                cart.OrderedOn = "";
+                
+                return cart;
+            }
+        }
+
         public Offer GetOffer(int id)
         {
             var offer = new Offer();

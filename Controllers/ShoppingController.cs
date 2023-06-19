@@ -99,5 +99,13 @@ namespace BackEcommerceAngNet.Controllers
             
             return Ok(result ? "insertado" : "no insertado");
         }
+
+        [HttpGet("GetCartActivoPorUser/{userid}")]
+        public IActionResult InsertCartItem(int userid)
+        {
+            var result = dataAccess.GetCartActivePorUser(userid);
+
+            return Ok(result);
+        }
     }
 }

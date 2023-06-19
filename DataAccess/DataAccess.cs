@@ -331,6 +331,36 @@ namespace BackEcommerceAngNet.DataAccess
             }
         }
 
+        public bool InsertItemCart(int useid, int productid)
+        {
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+                string query = "SELECT COUNT(*) from Carts WHERE UserId=" + useid + " AND Ordered='false';";
+                command.CommandText = query; 
+                int count = (int)command.ExecuteScalar();
+
+                if (count == 0)
+                {
+                    query = "INSERT INTO Carts(UserId,Ordered,OrderedOn) values("+ useid + ",'false','')";
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
+                }
+                query = "SELECT CartId from Carts WHERE UserId=" + useid + " AND Ordered='false';";
+                command.CommandText = query;
+                int cartid = (int)command.ExecuteScalar();
+
+                query = "INSERT INTO CartItems(CartId,ProductId) values(" + cartid + ","+productid+")";
+                command.CommandText = query;
+                command.ExecuteNonQuery();
+                return true;
+            }
+        }
+
         public void InsertReview(Review review)
         {
             using (SqlConnection connection = new SqlConnection(bdconnection))

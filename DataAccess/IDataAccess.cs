@@ -14,5 +14,6 @@ namespace BackEcommerceAngNet.DataAccess
         void InsertReview(Review review);
         List<Review> GetReviews(int productid);
         User GetUser(int id);
+        bool InsertItemCart(int useid, int productid);
     }
 }

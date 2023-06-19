@@ -90,5 +90,14 @@ namespace BackEcommerceAngNet.Controllers
             var result=dataAccess.GetReviews(productid);
             return Ok(result);
         }
+
+        [HttpPost("InsertCartItem/{useid}/{productid}")]
+        //aqui no debe ir el [FromBody] porque son 2 parametros y al useid lo convierte en string
+        public IActionResult InsertCartItem(int useid, int productid)
+        {
+            var result=dataAccess.InsertItemCart(useid, productid);
+            
+            return Ok(result ? "insertado" : "no insertado");
+        }
     }
 }

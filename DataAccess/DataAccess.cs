@@ -24,6 +24,46 @@ namespace BackEcommerceAngNet.DataAccess
             formatodate = this.configuration["Constants: FormatoDate"];
         }
 
+        public Cart GetCart(int cartid)
+        {
+            Cart cart = new Cart();
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+                string query = "SELECT * from CartItems WHERE CartId=" + cartid + ";";
+                command.CommandText = query;
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CartItems item = new CartItems();
+                    item.Id = (int)reader["CartItemId"];
+                    item.Producto = GetProduct((int)reader["ProductId"]);
+                    cart.CartItems.Add(item);
+                };
+                reader.Close();
+
+                query = "SELECT * from Carts WHERE CartId=" + cartid + ";";
+                command.CommandText = query;
+                reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    cart.Id = (int)reader["CartId"];
+                    cart.User = GetUser((int)reader["UserId"]);
+                    cart.Ordered = bool.Parse((string)reader["Ordered"]);
+                    cart.OrderedOn = (string)reader["OrderedOn"];
+                };
+                reader.Close();
+
+                return cart;
+            }
+        }
+
         public Cart GetCartActivePorUser(int userid)
         {
             Cart cart = new Cart();
@@ -97,6 +137,59 @@ namespace BackEcommerceAngNet.DataAccess
             {
                 throw ex;
             }            
+        }
+
+        public List<PaymentMethod> GetPaymentMethods(int payid)
+        {
+            var results = new List<PaymentMethod>();
+
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                string query = "SELECT * FROM PaymentMethods WHERE PaymentMethodId=" + payid + ";";
+                command.CommandText = query;
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    PaymentMethod pay=new PaymentMethod();
+                    pay.Tipo = (string)reader["Type"];
+                    pay.Proveedor = (string)reader["Provider"];
+                    pay.Disponible = bool.Parse((string)reader["Available"]);
+                    results.Add(pay);
+                }
+            }
+            return results;
+        }
+
+        public List<Cart> GetPreviousCart(int userid)
+        {
+            var carts = new List<Cart>();
+
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                string query = "SELECT CartId FROM Carts WHERE UserId=" + userid + " AND Ordered='true'";
+                command.CommandText = query;
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var cartid = (int)reader["CartId"];
+                    carts.Add(GetCart(cartid));
+                }
+            }
+            return carts;
         }
 
         public Product GetProduct(int id)

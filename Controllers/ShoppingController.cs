@@ -107,5 +107,22 @@ namespace BackEcommerceAngNet.Controllers
 
             return Ok(result);
         }
+        
+        [HttpGet("GetPreviousCart/{userid}")]
+        public IActionResult GetPreviousCart(int userid)
+        {
+            var result = dataAccess.GetPreviousCart(userid);
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("GetPaymentMethods/{payid}")]
+        public IActionResult GetPaymentMethods(int payid)
+        {
+            var result = dataAccess.GetPaymentMethods(payid);
+
+            return Ok(result);
+        }
     }
 }

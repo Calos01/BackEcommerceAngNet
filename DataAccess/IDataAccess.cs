@@ -16,5 +16,8 @@ namespace BackEcommerceAngNet.DataAccess
         User GetUser(int id);
         bool InsertItemCart(int useid, int productid);
         Cart GetCartActivePorUser(int userid);
+        List<Cart> GetPreviousCart(int userid);
+        Cart GetCart(int cartid);
+        List<PaymentMethod> GetPaymentMethods(int payid);
     }
 }

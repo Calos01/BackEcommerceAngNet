@@ -117,10 +117,10 @@ namespace BackEcommerceAngNet.Controllers
         }
 
 
-        [HttpGet("GetPaymentMethods/{payid}")]
-        public IActionResult GetPaymentMethods(int payid)
+        [HttpGet("GetPaymentMethods")]
+        public IActionResult GetPaymentMethods()
         {
-            var result = dataAccess.GetPaymentMethods(payid);
+            var result = dataAccess.GetPaymentMethods();
 
             return Ok(result);
         }

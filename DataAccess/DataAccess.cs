@@ -139,7 +139,7 @@ namespace BackEcommerceAngNet.DataAccess
             }            
         }
 
-        public List<PaymentMethod> GetPaymentMethods(int payid)
+        public List<PaymentMethod> GetPaymentMethods()
         {
             var results = new List<PaymentMethod>();
 
@@ -149,7 +149,7 @@ namespace BackEcommerceAngNet.DataAccess
                 {
                     Connection = connection
                 };
-                string query = "SELECT * FROM PaymentMethods WHERE PaymentMethodId=" + payid + ";";
+                string query = "SELECT * FROM PaymentMethods";
                 command.CommandText = query;
 
                 connection.Open();
@@ -158,6 +158,7 @@ namespace BackEcommerceAngNet.DataAccess
                 while (reader.Read())
                 {
                     PaymentMethod pay=new PaymentMethod();
+                    pay.Id = (int)reader["PaymentMethodId"];
                     pay.Tipo = (string)reader["Type"];
                     pay.Proveedor = (string)reader["Provider"];
                     pay.Disponible = bool.Parse((string)reader["Available"]);

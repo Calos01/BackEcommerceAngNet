@@ -19,5 +19,7 @@ namespace BackEcommerceAngNet.DataAccess
         List<Cart> GetPreviousCart(int userid);
         Cart GetCart(int cartid);
         List<PaymentMethod> GetPaymentMethods();
+        int InsertedPayment(Payment paymet);
+        int InsertedOrder(Order order);
     }
 }

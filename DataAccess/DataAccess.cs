@@ -468,6 +468,80 @@ namespace BackEcommerceAngNet.DataAccess
             }
         }
 
+        public int InsertedOrder(Order order)
+        {
+            int idord = 0;
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                //el @ antes del string significa que la cadena se imprimira tal cual sin escapes que se puede hacer con + o . ,etc
+                string query = @"INSERT INTO Orders(UserId,CartId,PaymentId,CreatedAt) values(@uid,@caid,@pi,@ca)";
+                command.CommandText = query;
+                command.Parameters.Add("@uid", System.Data.SqlDbType.Int).Value = order.User.UserId;
+                command.Parameters.Add("@caid", System.Data.SqlDbType.Int).Value = order.Cart.Id;
+                command.Parameters.Add("@pi", System.Data.SqlDbType.NVarChar).Value = order.Payment.Id;
+                command.Parameters.Add("@ca", System.Data.SqlDbType.NVarChar).Value = order.CreatedAt;
+
+                connection.Open();
+                idord = command.ExecuteNonQuery();
+                if (idord > 0)
+                {
+                    query="UPDATE Carts SET Ordered='true', OrderedOn='"+DateTime.Now.ToString(formatodate)+"' WHERE CartId="+order.Cart.Id+";";
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
+
+                    query = "SELECT TOP 1 Id FROM Orders ORDER BY Id DESC";
+                    command.CommandText = query;
+                    idord = (int)command.ExecuteScalar();
+                }
+                else
+                {
+                    idord = 0;
+                }
+            }
+            return idord;
+        }
+   
+
+        public int InsertedPayment(Payment payment)
+        {
+            int res = 0;
+            using (SqlConnection connection = new SqlConnection(bdconnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                //el @ antes del string significa que la cadena se imprimira tal cual sin escapes que se puede hacer con + o . ,etc
+                string query= @"INSERT INTO Payments(UserId,PaymentMethodId,TotalAmount,ShippingCharges,AmountReduced,AmountPaid,CreatedAt) values(@uid,@pmid,@ta,@sc,@ar,@ap,@ca)";
+                command.CommandText = query;
+                command.Parameters.Add("@uid", System.Data.SqlDbType.Int).Value = payment.User.UserId;
+                command.Parameters.Add("@pmid", System.Data.SqlDbType.Int).Value = payment.PaymentMethod.Id;
+                command.Parameters.Add("@ta", System.Data.SqlDbType.NVarChar).Value = payment.MontoTotal;
+                command.Parameters.Add("@sc", System.Data.SqlDbType.NVarChar).Value = payment.CostoEnvio;
+                command.Parameters.Add("@ar", System.Data.SqlDbType.NVarChar).Value = payment.MontoDescuento;
+                command.Parameters.Add("@ap", System.Data.SqlDbType.NVarChar).Value = payment.PrecioPagar;
+                command.Parameters.Add("@ca", System.Data.SqlDbType.NVarChar).Value = payment.CreatedAt;
+
+                connection.Open();
+                res=command.ExecuteNonQuery();
+                if (res > 0)
+                {
+                    query = "SELECT TOP 1 Id FROM Payments ORDER BY Id DESC";
+                    command.CommandText = query;
+                    res=(int)command.ExecuteScalar();
+                }
+                else
+                {
+                    res= 0;
+                }
+            }
+                return res;
+        }
+
         public bool InsertItemCart(int useid, int productid)
         {
             using (SqlConnection connection = new SqlConnection(bdconnection))

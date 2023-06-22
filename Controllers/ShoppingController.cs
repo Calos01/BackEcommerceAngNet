@@ -124,5 +124,24 @@ namespace BackEcommerceAngNet.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("InsertedPayment")]
+        public IActionResult InsertedPayment(Payment payment)
+        {
+            var idpay=0;
+            payment.CreatedAt = DateTime.Now.ToString(formatodate);
+            idpay=dataAccess.InsertedPayment(payment);
+
+            return Ok(idpay.ToString());
+        }
+        [HttpPost("InsertedOrder")]
+        public IActionResult InsertedOrder(Order order)
+        {
+            var idord=0;
+            order.CreatedAt = DateTime.Now.ToString(formatodate);
+            idord = dataAccess.InsertedOrder(order);
+
+            return Ok(idord.ToString());
+        }
     }
 }
